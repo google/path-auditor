@@ -18,7 +18,6 @@
 #include <fcntl.h>
 #include <linux/magic.h>
 #include <stdio.h>
-#include <sys/capability.h>
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
