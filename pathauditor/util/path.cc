@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "pathauditor/util/path.h"
+#include "third_party/pathauditor/util/path.h"
 
 #include <string.h>
 

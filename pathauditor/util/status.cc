@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "pathauditor/util/status.h"
+#include "third_party/pathauditor/util/status.h"
 
 #include "absl/strings/str_cat.h"
 

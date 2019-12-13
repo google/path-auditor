@@ -25,7 +25,7 @@
 
 #include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
-#include "pathauditor/util/status_internal.h"
+#include "third_party/pathauditor/util/status_internal.h"
 
 namespace pathauditor {
 

@@ -18,7 +18,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "pathauditor/util/status_matchers.h"
+#include "third_party/pathauditor/util/status_matchers.h"
 #include "pathauditor/util/status.h"
 
 namespace pathauditor {

@@ -15,7 +15,7 @@
 // This file is a custom fork of the version in Asylo. This will become obsolete
 // and will be replaced once Abseil releases absl::Status.
 
-#include "pathauditor/util/statusor.h"
+#include "third_party/pathauditor/util/statusor.h"
 
 #include <memory>
 #include <string>
@@ -23,7 +23,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "pathauditor/util/status_matchers.h"
+#include "third_party/pathauditor/util/status_matchers.h"
 
 using ::testing::Eq;
 using ::testing::IsFalse;
