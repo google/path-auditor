@@ -17,7 +17,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/strings/string_view.h"
-#include "third_party/pathauditor/util/status.h"
+#include "pathauditor/util/status.h"
 
 namespace pathauditor {
 

@@ -18,7 +18,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-#include "third_party/pathauditor/util/strerror.h"
+#include "pathauditor/util/strerror.h"
 
 namespace pathauditor {
 namespace internal {

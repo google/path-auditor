@@ -19,9 +19,9 @@
 
 #include "gmock/gmock.h"
 #include "absl/types/optional.h"
-#include "third_party/pathauditor/util/status.h"
-#include "third_party/pathauditor/util/status_macros.h"
-#include "third_party/pathauditor/util/statusor.h"
+#include "pathauditor/util/status.h"
+#include "pathauditor/util/status_macros.h"
+#include "pathauditor/util/statusor.h"
 
 #define PATHAUDITOR_PATHAUDITOR_ASSERT_OK_AND_ASSIGN(lhs, rexpr)                        \
   PATHAUDITOR_ASSERT_OK_AND_ASSIGN_IMPL(                                    \

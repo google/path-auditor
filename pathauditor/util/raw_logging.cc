@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "third_party/pathauditor/util/raw_logging.h"
+#include "pathauditor/util/raw_logging.h"
 
 #include <cstdlib>
 #include <limits>

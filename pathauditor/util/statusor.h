@@ -22,8 +22,8 @@
 #include "absl/base/attributes.h"
 #include "absl/base/log_severity.h"
 #include "absl/types/variant.h"
-#include "third_party/pathauditor/util/raw_logging.h"
-#include "third_party/pathauditor/util/status.h"
+#include "pathauditor/util/raw_logging.h"
+#include "pathauditor/util/status.h"
 
 namespace pathauditor {
 

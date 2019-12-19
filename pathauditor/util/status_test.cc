@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "third_party/pathauditor/util/status.h"
+#include "pathauditor/util/status.h"
 
 #include <string>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "third_party/pathauditor/util/status_matchers.h"
+#include "pathauditor/util/status_matchers.h"
 
 using ::testing::Eq;
 using ::testing::IsEmpty;

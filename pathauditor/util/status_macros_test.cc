@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "third_party/pathauditor/util/status_macros.h"
+#include "pathauditor/util/status_macros.h"
 
 #include <string>
 
@@ -20,9 +20,9 @@
 #include "gtest/gtest.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
-#include "third_party/pathauditor/util/status.h"
-#include "third_party/pathauditor/util/status_matchers.h"
-#include "third_party/pathauditor/util/statusor.h"
+#include "pathauditor/util/status.h"
+#include "pathauditor/util/status_matchers.h"
+#include "pathauditor/util/statusor.h"
 
 namespace pathauditor {
 namespace {

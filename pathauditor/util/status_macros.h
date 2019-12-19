@@ -19,7 +19,7 @@
 #define PATHAUDITOR_UTIL_STATUS_MACROS_H_
 
 #include "absl/base/optimization.h"
-#include "third_party/pathauditor/util/status.h"
+#include "pathauditor/util/status.h"
 
 // Internal helper for concatenating macro values.
 #define PATHAUDITOR_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
