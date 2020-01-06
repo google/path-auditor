@@ -54,6 +54,10 @@
 #define FS_IMMUTABLE_FL 16
 #endif
 
+#ifndef CGROUP2_SUPER_MAGIC
+#define CGROUP2_SUPER_MAGIC 0x63677270
+#endif
+
 namespace pathauditor {
 
 namespace {
