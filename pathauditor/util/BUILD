@@ -131,6 +131,7 @@ cc_library(
     hdrs = ["raw_logging.h"],
     deps = [
         ":strerror",
+        "//base",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:str_format",
     ],
