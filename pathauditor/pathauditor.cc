@@ -33,11 +33,11 @@
 
 #include <glog/logging.h>
 #include "pathauditor/util/path.h"
+#include "pathauditor/util/cleanup.h"
 #include "absl/container/fixed_array.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
-#include "pathauditor/util/cleanup.h"
 #include "pathauditor/util/canonical_errors.h"
 #include "pathauditor/util/status.h"
 #include "pathauditor/util/status_macros.h"
