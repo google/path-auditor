@@ -54,6 +54,10 @@
 #define FS_IMMUTABLE_FL 16
 #endif
 
+#ifndef CGROUP2_SUPER_MAGIC
+#define CGROUP2_SUPER_MAGIC 0x63677270
+#endif
+
 namespace pathauditor {
 
 namespace {
@@ -386,6 +390,7 @@ StatusOr<bool> FileEventIsUserControlled(
       }
       break;
     }
+#ifdef SYS_execveat
     case SYS_execveat: {
       PATHAUDITOR_ASSIGN_OR_RETURN(fd_arg, event.Arg(0));
       PATHAUDITOR_ASSIGN_OR_RETURN(int flags, event.Arg(4));
@@ -401,6 +406,7 @@ StatusOr<bool> FileEventIsUserControlled(
       }
       break;
     }
+#endif
     case SYS_execve: {
       StatusOr<bool> result = FileIsUserWritable(proc_info, path);
       if (result.ok() && *result) {
