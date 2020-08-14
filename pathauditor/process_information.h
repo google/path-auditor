@@ -17,9 +17,9 @@
 
 #include <fcntl.h>
 
+#include "pathauditor/util/statusor.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
-#include "pathauditor/util/statusor.h"
 
 namespace pathauditor {
 

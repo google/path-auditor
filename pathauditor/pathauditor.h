@@ -17,11 +17,11 @@
 
 #include <sys/types.h>
 
+#include "pathauditor/util/statusor.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "pathauditor/file_event.h"
 #include "pathauditor/process_information.h"
-#include "pathauditor/util/statusor.h"
 
 namespace pathauditor {
 

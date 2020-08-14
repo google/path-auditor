@@ -19,9 +19,9 @@
 #include <string>
 #include <vector>
 
+#include "pathauditor/util/statusor.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
-#include "pathauditor/util/statusor.h"
 
 namespace pathauditor {
 

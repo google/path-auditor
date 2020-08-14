@@ -10,11 +10,11 @@ cc_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":logging",
+        "//pathauditor/util:statusor",
         "//pathauditor",
         "//pathauditor:file_event",
         "//pathauditor:process_information",
         "//pathauditor/util:status",
-        "//pathauditor/util:statusor",
     ],
 )
 

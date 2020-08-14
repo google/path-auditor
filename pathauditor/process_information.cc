@@ -19,6 +19,7 @@
 #include <sys/types.h>
 
 #include "pathauditor/util/path.h"
+#include "pathauditor/util/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "pathauditor/util/canonical_errors.h"
 #include "pathauditor/util/status_macros.h"

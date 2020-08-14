@@ -14,9 +14,9 @@
 
 #include "pathauditor/file_event.h"
 
+#include "pathauditor/util/statusor.h"
 #include "absl/strings/string_view.h"
 #include "pathauditor/util/canonical_errors.h"
-#include "pathauditor/util/statusor.h"
 
 namespace pathauditor {
 

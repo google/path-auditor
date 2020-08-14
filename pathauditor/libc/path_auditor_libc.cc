@@ -25,12 +25,12 @@
 #include <iterator>
 #include <vector>
 
+#include "pathauditor/util/statusor.h"
 #include "pathauditor/file_event.h"
 #include "pathauditor/libc/logging.h"
 #include "pathauditor/pathauditor.h"
 #include "pathauditor/process_information.h"
 #include "pathauditor/util/status_macros.h"
-#include "pathauditor/util/statusor.h"
 
 typedef int (*orig_open_type)(const char *file, int oflag, ...);
 typedef int (*orig_open64_type)(const char *file, int oflag, ...);

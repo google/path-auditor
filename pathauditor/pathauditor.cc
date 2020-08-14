@@ -35,6 +35,7 @@
 #include "pathauditor/util/path.h"
 #include "pathauditor/util/cleanup.h"
 #include "absl/container/fixed_array.h"
+#include "pathauditor/util/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
