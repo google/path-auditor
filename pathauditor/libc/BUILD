@@ -10,11 +10,11 @@ cc_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":logging",
-        "//pathauditor/util:statusor",
+        "@com_google_absl//absl/status:statusor",
         "//pathauditor",
         "//pathauditor:file_event",
         "//pathauditor:process_information",
-        "//pathauditor/util:status",
+        "//pathauditor/util:status_macros",
     ],
 )
 
@@ -26,9 +26,10 @@ cc_library(
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/debugging:stacktrace",
         "@com_google_absl//absl/debugging:symbolize",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings:str_format",
         "//pathauditor:file_event",
         "//pathauditor:process_information",
-        "//pathauditor/util:status",
+        "//pathauditor/util:status_macros",
     ],
 )

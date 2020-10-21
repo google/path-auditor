@@ -32,8 +32,10 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        "//pathauditor/util:status_macros",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/meta:type_traits",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
     ],
 )
@@ -74,6 +76,8 @@ cc_test(
     deps = [
         ":status",
         ":status_matchers",
+        "//pathauditor/util:status_macros",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_googletest//:gtest_main",
     ],
 )

@@ -19,19 +19,19 @@
 #include <sys/types.h>
 
 #include "pathauditor/util/path.h"
-#include "pathauditor/util/statusor.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
-#include "pathauditor/util/canonical_errors.h"
+#include "util/task/canonical_errors.h"
 #include "pathauditor/util/status_macros.h"
 
 namespace pathauditor {
 
 namespace {
 
-StatusOr<int> OpenFile(absl::string_view path, int open_flags) {
+absl::StatusOr<int> OpenFile(absl::string_view path, int open_flags) {
   int fd = open(std::string(path).c_str(), open_flags);
   if (fd == -1) {
-    return FailedPreconditionError(
+    return util::FailedPreconditionError(
         absl::StrCat("Could not open \"", path, "\""));
   }
   return fd;
@@ -44,22 +44,22 @@ RemoteProcessInformation::RemoteProcessInformation(
     bool fallback)
     : pid_(pid), cwd_(cwd), cmdline_(std::move(cmdline)), fallback_(fallback) {}
 
-StatusOr<int> RemoteProcessInformation::OpenFileInProc(
+absl::StatusOr<int> RemoteProcessInformation::OpenFileInProc(
     absl::string_view path, int open_flags) const {
   return OpenFile(JoinPath("/proc", absl::StrCat(pid_), path),
                   open_flags);
 }
 
-StatusOr<int> RemoteProcessInformation::DupDirFileDescriptor(
+absl::StatusOr<int> RemoteProcessInformation::DupDirFileDescriptor(
     int fd, int open_flags) const {
   return OpenFileInProc(JoinPath("fd", absl::StrCat(fd)), open_flags);
 }
 
-StatusOr<int> RemoteProcessInformation::CwdFileDescriptor(
+absl::StatusOr<int> RemoteProcessInformation::CwdFileDescriptor(
     int open_flags) const {
   // The root of the target process might not be the same as ours. Try to
   // resolve it relative to /proc/<pid>/root
-  StatusOr<int> maybe_fd =
+  absl::StatusOr<int> maybe_fd =
       OpenFileInProc(JoinPath("root", cwd_), open_flags);
   if (maybe_fd.ok() || !fallback_) {
     return maybe_fd;
@@ -68,9 +68,9 @@ StatusOr<int> RemoteProcessInformation::CwdFileDescriptor(
   return OpenFile(cwd_, open_flags);
 }
 
-StatusOr<int> RemoteProcessInformation::RootFileDescriptor(
+absl::StatusOr<int> RemoteProcessInformation::RootFileDescriptor(
     int open_flags) const {
-  StatusOr<int> maybe_fd = OpenFileInProc("root", open_flags);
+  absl::StatusOr<int> maybe_fd = OpenFileInProc("root", open_flags);
   if (maybe_fd.ok() || !fallback_) {
     return maybe_fd;
   }
@@ -86,22 +86,22 @@ std::string RemoteProcessInformation::Cmdline() const {
   return cmdline_.value_or("");
 }
 
-StatusOr<int> SameProcessInformation::DupDirFileDescriptor(
+absl::StatusOr<int> SameProcessInformation::DupDirFileDescriptor(
     int fd, int open_flags) const {
   // use openat instead of dup so that we control the flags
   int new_fd = openat(fd, ".", open_flags);
   if (new_fd == -1) {
-    return FailedPreconditionError("openat on dir fd failed");
+    return util::FailedPreconditionError("openat on dir fd failed");
   }
   return new_fd;
 }
 
-StatusOr<int> SameProcessInformation::CwdFileDescriptor(
+absl::StatusOr<int> SameProcessInformation::CwdFileDescriptor(
     int open_flags) const {
   return OpenFile(".", open_flags);
 }
 
-StatusOr<int> SameProcessInformation::RootFileDescriptor(
+absl::StatusOr<int> SameProcessInformation::RootFileDescriptor(
     int open_flags) const {
   return OpenFile("/", open_flags);
 }

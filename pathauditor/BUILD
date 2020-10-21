@@ -16,13 +16,13 @@ cc_library(
         ":process_information",
         "//pathauditor/util:cleanup",
         "//pathauditor/util:path",
-        "//pathauditor/util:status",
-        "//pathauditor/util:statusor",
+        "//pathauditor/util:status_macros",
+        "//third_party/libcap",
         "@com_google_absl//absl/container:fixed_array",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:optional",
         "@com_google_glog//:glog",
-        "@org_kernel_libcap//:libcap",
     ],
 )
 
@@ -32,8 +32,8 @@ cc_library(
     hdrs = ["process_information.h"],
     deps = [
         "//pathauditor/util:path",
-        "//pathauditor/util:status",
-        "//pathauditor/util:statusor",
+        "//pathauditor/util:status_macros",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:optional",
     ],
@@ -44,8 +44,8 @@ cc_library(
     srcs = ["file_event.cc"],
     hdrs = ["file_event.h"],
     deps = [
-        "//pathauditor/util:status",
-        "//pathauditor/util:statusor",
+        "//pathauditor/util:status_macros",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
     ],
 )
@@ -55,7 +55,7 @@ cc_test(
     srcs = ["file_event_test.cc"],
     deps = [
         ":file_event",
-        "//pathauditor/util:status",
+        "//pathauditor/util:status_macros",
         "//pathauditor/util:status_matchers",
         "@com_google_googletest//:gtest_main",
     ],

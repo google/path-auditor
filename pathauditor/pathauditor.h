@@ -17,7 +17,7 @@
 
 #include <sys/types.h>
 
-#include "pathauditor/util/statusor.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "pathauditor/file_event.h"
@@ -29,7 +29,7 @@ namespace pathauditor {
 // an unprivileged user.
 // If the path is relative, at_fd needs to be a valid file descriptor.
 // The max_iteration_count is to guard against symlink loops.
-StatusOr<bool> PathIsUserControlled(
+absl::StatusOr<bool> PathIsUserControlled(
     const ProcessInformation &proc_info, absl::string_view path,
     absl::optional<int> at_fd = absl::optional<int>(),
     unsigned int max_iteration_count = 40);
@@ -38,7 +38,7 @@ StatusOr<bool> PathIsUserControlled(
 // arguments.
 // For example, if open is called with the O_NOFOLLOW flag, we can skip the last
 // element in the path.
-StatusOr<bool> FileEventIsUserControlled(
+absl::StatusOr<bool> FileEventIsUserControlled(
     const ProcessInformation &proc_info, const FileEvent &event);
 
 }  // namespace pathauditor

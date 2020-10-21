@@ -15,14 +15,15 @@
 #ifndef PATHAUDITOR_LIBC_LOGGING_H_
 #define PATHAUDITOR_LIBC_LOGGING_H_
 
+#include "absl/status/status.h"
 #include "pathauditor/file_event.h"
-#include "pathauditor/util/status.h"
+#include "util/task/status.h"
 
 namespace pathauditor {
 
 void LogInsecureAccess(const FileEvent &event, const char *function_name);
 
-void LogError(const Status &status);
+void LogError(const absl::Status &status);
 
 }  // namespace pathauditor
 

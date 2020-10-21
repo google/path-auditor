@@ -35,12 +35,12 @@
 #include "pathauditor/util/path.h"
 #include "pathauditor/util/cleanup.h"
 #include "absl/container/fixed_array.h"
-#include "pathauditor/util/statusor.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
-#include "pathauditor/util/canonical_errors.h"
-#include "pathauditor/util/status.h"
+#include "util/task/canonical_errors.h"
+#include "util/task/status.h"
 #include "pathauditor/util/status_macros.h"
 
 #ifndef FS_IOC_GETFLAGS
@@ -67,19 +67,19 @@ namespace {
 // fails with an O_PATH file descriptor.
 constexpr int kDirOpenFlags = O_RDONLY;
 
-StatusOr<bool> FdIsImmutable(int fd) {
+absl::StatusOr<bool> FdIsImmutable(int fd) {
   int32_t flags;
   if (ioctl(fd, FS_IOC_GETFLAGS, &flags) < 0) {
     if (errno == ENOTTY) {
       // ENOTTY is returned if the filesystem doesn't support this option
       return false;
     }
-    return FailedPreconditionError("ioctl(FS_IOC_GETFLATS) failed.");
+    return util::FailedPreconditionError("ioctl(FS_IOC_GETFLATS) failed.");
   }
   return flags & FS_IMMUTABLE_FL;
 }
 
-StatusOr<int> ResolveDirFd(const ProcessInformation &proc_info,
+absl::StatusOr<int> ResolveDirFd(const ProcessInformation &proc_info,
                                  absl::string_view path,
                                  absl::optional<int> at_fd) {
   int dir_fd;
@@ -95,7 +95,7 @@ StatusOr<int> ResolveDirFd(const ProcessInformation &proc_info,
   return dir_fd;
 }
 
-StatusOr<bool> FileIsUserWritable(
+absl::StatusOr<bool> FileIsUserWritable(
     const ProcessInformation &proc_info, absl::string_view file,
     absl::optional<int> at_fd = absl::optional<int>()) {
   PATHAUDITOR_ASSIGN_OR_RETURN(int dir_fd, ResolveDirFd(proc_info, file, at_fd));
@@ -104,7 +104,7 @@ StatusOr<bool> FileIsUserWritable(
   struct stat sb;
   if (fstatat(dir_fd, std::string(file).c_str(), &sb, 0) == -1) {
     if (errno != ENOENT) {
-      return FailedPreconditionError(
+      return util::FailedPreconditionError(
           absl::StrCat("Couldn't fstatat ", file));
     }
     // The file doesn't exist so it's not writable
@@ -128,7 +128,7 @@ StatusOr<bool> FileIsUserWritable(
   return false;
 }
 
-StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
+absl::StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
   // Filter out special files
   if (file == "." || file == "..") {
     return false;
@@ -143,7 +143,7 @@ StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
   int file_fd = openat(dir_fd, std::string(file).c_str(), O_RDONLY);
   if (file_fd == -1) {
     if (errno != ENOENT) {
-      return FailedPreconditionError(
+      return util::FailedPreconditionError(
           absl::StrCat("Couldn't open file for immutable check ", file));
     }
   } else {
@@ -156,7 +156,7 @@ StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
 
   struct statfs fs_buf;
   if (fstatfs(dir_fd, &fs_buf) == -1) {
-    return FailedPreconditionError("fstatfs(dir_fd) failed");
+    return util::FailedPreconditionError("fstatfs(dir_fd) failed");
   }
 
   // ignore proc and cgroup filesystems
@@ -168,7 +168,7 @@ StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
 
   struct stat sb;
   if (fstat(dir_fd, &sb) == -1) {
-    return FailedPreconditionError("fstat(dir_fd) failed");
+    return util::FailedPreconditionError("fstat(dir_fd) failed");
   }
 
   // non-root owner
@@ -193,7 +193,7 @@ StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
     if (fstatat(dir_fd, std::string(file).c_str(), &next_sb, AT_SYMLINK_NOFOLLOW) ==
         -1) {
       if (errno != ENOENT) {
-        return FailedPreconditionError(
+        return util::FailedPreconditionError(
             absl::StrCat("Couldn't fstatat ", file));
       }
       // The file doesn't exist but it could be created by a user
@@ -217,7 +217,7 @@ StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
 //  * dir => check perms and enter
 //  * relative link => prepend to remaining path
 //  * absolute link => prepend to remaining path and start at /
-StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
+absl::StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
                                           absl::string_view path,
                                           absl::optional<int> at_fd,
                                           unsigned int max_iteration_count) {
@@ -250,7 +250,7 @@ StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
     struct stat sb;
     if (fstatat(dir_fd, elem.c_str(), &sb, AT_SYMLINK_NOFOLLOW) == -1) {
       if (errno != ENOENT) {
-        return FailedPreconditionError(
+        return util::FailedPreconditionError(
             absl::StrCat("Could not stat path element ", elem));
       } else {
         return false;
@@ -263,12 +263,12 @@ StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
     if ((sb.st_mode & S_IFMT) == S_IFLNK) {
       struct statfs fs_buf;
       if (fstatfs(dir_fd, &fs_buf) == -1) {
-        return FailedPreconditionError("fstatfs(dir_fd) failed");
+        return util::FailedPreconditionError("fstatfs(dir_fd) failed");
       }
 
       if (fs_buf.f_type == PROC_SUPER_MAGIC) {
         if (fstatat(dir_fd, elem.c_str(), &sb, 0) == -1) {
-          return FailedPreconditionError(absl::StrCat(
+          return util::FailedPreconditionError(absl::StrCat(
               "Could not stat path element without nofollow", elem));
         }
       }
@@ -279,7 +279,7 @@ StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
         // Change into the directory
         int new_fd = openat(dir_fd, elem.c_str(), kDirOpenFlags);
         if (new_fd == -1) {
-          return FailedPreconditionError(
+          return util::FailedPreconditionError(
               absl::StrCat("Couldn't openat next elem ", elem));
         }
         close(dir_fd);
@@ -292,11 +292,11 @@ StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
         ssize_t link_len = readlinkat(dir_fd, elem.c_str(), link_buf.data(),
                                       link_buf.memsize());
         if (link_len == -1) {
-          return FailedPreconditionError(
+          return util::FailedPreconditionError(
               absl::StrCat("Could not read link for path element ", elem));
         }
         if ((size_t)link_len >= link_buf.memsize()) {
-          return FailedPreconditionError(
+          return util::FailedPreconditionError(
               absl::StrCat("Link is larger than PATH_MAX ",
                            std::string(link_buf.data(), link_buf.memsize())));
         }
@@ -317,18 +317,18 @@ StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
       }
       default:
         if (!path_queue.empty()) {
-          return FailedPreconditionError(
+          return util::FailedPreconditionError(
               "Non-directory in middle of path.");
         }
         return false;
     }
   }
 
-  return ResourceExhaustedError(
+  return util::ResourceExhaustedError(
       absl::StrCat("Ran into max iteration count ", max_iteration_count));
 }
 
-StatusOr<bool> FileEventIsUserControlled(
+absl::StatusOr<bool> FileEventIsUserControlled(
     const ProcessInformation &proc_info, const FileEvent &event) {
   PATHAUDITOR_ASSIGN_OR_RETURN(std::string path, event.PathArg(0));
 
@@ -398,7 +398,7 @@ StatusOr<bool> FileEventIsUserControlled(
       if (flags & AT_EMPTY_PATH && path.empty()) {
         return false;
       }
-      StatusOr<bool> result = FileIsUserWritable(proc_info, path, fd_arg);
+      absl::StatusOr<bool> result = FileIsUserWritable(proc_info, path, fd_arg);
       if (result.ok() && *result) {
         return true;
       }
@@ -409,7 +409,7 @@ StatusOr<bool> FileEventIsUserControlled(
     }
 #endif
     case SYS_execve: {
-      StatusOr<bool> result = FileIsUserWritable(proc_info, path);
+      absl::StatusOr<bool> result = FileIsUserWritable(proc_info, path);
       if (result.ok() && *result) {
         return true;
       }
@@ -435,7 +435,7 @@ StatusOr<bool> FileEventIsUserControlled(
     case SYS_rename: {
       skip_last_element = true;
       PATHAUDITOR_ASSIGN_OR_RETURN(std::string other_path, event.PathArg(1));
-      StatusOr<bool> result =
+      absl::StatusOr<bool> result =
           PathIsUserControlled(proc_info, Dirname(other_path));
       if (result.ok() && *result) {
         return true;
@@ -448,7 +448,7 @@ StatusOr<bool> FileEventIsUserControlled(
       PATHAUDITOR_ASSIGN_OR_RETURN(fd_arg, event.Arg(0));
       PATHAUDITOR_ASSIGN_OR_RETURN(int new_fd, event.Arg(2));
       PATHAUDITOR_ASSIGN_OR_RETURN(std::string new_path, event.PathArg(1));
-      StatusOr<bool> result =
+      absl::StatusOr<bool> result =
           PathIsUserControlled(proc_info, Dirname(new_path), new_fd);
       if (result.ok() && *result) {
         return true;
@@ -458,7 +458,7 @@ StatusOr<bool> FileEventIsUserControlled(
     }
     case SYS_link: {
       PATHAUDITOR_ASSIGN_OR_RETURN(std::string newpath, event.PathArg(1));
-      StatusOr<bool> result =
+      absl::StatusOr<bool> result =
           PathIsUserControlled(proc_info, Dirname(newpath));
       if (result.ok() && *result) {
         return true;
@@ -467,7 +467,7 @@ StatusOr<bool> FileEventIsUserControlled(
     }
     case SYS_symlink: {
       PATHAUDITOR_ASSIGN_OR_RETURN(std::string newpath, event.PathArg(1));
-      StatusOr<bool> result =
+      absl::StatusOr<bool> result =
           PathIsUserControlled(proc_info, Dirname(newpath));
       if (result.ok() && *result) {
         return true;
@@ -481,7 +481,7 @@ StatusOr<bool> FileEventIsUserControlled(
       PATHAUDITOR_ASSIGN_OR_RETURN(int newdirfd, event.Arg(2));
       PATHAUDITOR_ASSIGN_OR_RETURN(int flags, event.Arg(4));
 
-      StatusOr<bool> result =
+      absl::StatusOr<bool> result =
           PathIsUserControlled(proc_info, Dirname(newpath), newdirfd);
       if (result.ok() && *result) {
         return true;
@@ -500,7 +500,7 @@ StatusOr<bool> FileEventIsUserControlled(
     case SYS_symlinkat: {
       PATHAUDITOR_ASSIGN_OR_RETURN(std::string newpath, event.PathArg(1));
       PATHAUDITOR_ASSIGN_OR_RETURN(int newdirfd, event.Arg(1));
-      StatusOr<bool> result =
+      absl::StatusOr<bool> result =
           PathIsUserControlled(proc_info, Dirname(newpath), newdirfd);
       if (result.ok() && *result) {
         return true;
@@ -513,7 +513,7 @@ StatusOr<bool> FileEventIsUserControlled(
       PATHAUDITOR_ASSIGN_OR_RETURN(std::string target, event.PathArg(1));
       PATHAUDITOR_ASSIGN_OR_RETURN(int flags, event.Arg(3));
 
-      StatusOr<bool> result = PathIsUserControlled(proc_info, target);
+      absl::StatusOr<bool> result = PathIsUserControlled(proc_info, target);
       if (result.ok() && *result) {
         return true;
       }
@@ -527,7 +527,7 @@ StatusOr<bool> FileEventIsUserControlled(
     }
     default:
       LOG(ERROR) << "Unexpected syscall nr: " << event.syscall_nr;
-      return UnimplementedError(
+      return util::UnimplementedError(
           absl::StrCat("No support for syscall ", event.syscall_nr));
   }
 

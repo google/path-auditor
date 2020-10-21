@@ -18,7 +18,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "pathauditor/util/statusor.h"
+#include "absl/status/statusor.h"
 #include "pathauditor/util/status_matchers.h"
 
 using ::testing::Eq;

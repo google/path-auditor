@@ -17,7 +17,7 @@
 
 #include <fcntl.h>
 
-#include "pathauditor/util/statusor.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 
@@ -29,19 +29,19 @@ namespace pathauditor {
 class ProcessInformation {
  public:
   virtual ~ProcessInformation() {}
-  virtual StatusOr<int> DupDirFileDescriptor(int fd,
+  virtual absl::StatusOr<int> DupDirFileDescriptor(int fd,
                                                    int open_flags) const = 0;
-  virtual StatusOr<int> CwdFileDescriptor(int open_flags) const = 0;
-  virtual StatusOr<int> RootFileDescriptor(int open_flags) const = 0;
+  virtual absl::StatusOr<int> CwdFileDescriptor(int open_flags) const = 0;
+  virtual absl::StatusOr<int> RootFileDescriptor(int open_flags) const = 0;
 };
 
 // Represents the current process. CwdFileDescriptor will simply open(".") etc.
 class SameProcessInformation : public ProcessInformation {
  public:
-  StatusOr<int> DupDirFileDescriptor(int fd,
+  absl::StatusOr<int> DupDirFileDescriptor(int fd,
                                            int open_flags) const override;
-  StatusOr<int> CwdFileDescriptor(int open_flags) const override;
-  StatusOr<int> RootFileDescriptor(int open_flags) const override;
+  absl::StatusOr<int> CwdFileDescriptor(int open_flags) const override;
+  absl::StatusOr<int> RootFileDescriptor(int open_flags) const override;
 };
 
 // Represents a remote process. File descriptors are looked up using the proc
@@ -58,17 +58,17 @@ class RemoteProcessInformation : public ProcessInformation {
       absl::optional<std::string> cmdline = absl::optional<std::string>(),
       bool fallback = false);
 
-  StatusOr<int> DupDirFileDescriptor(int fd,
+  absl::StatusOr<int> DupDirFileDescriptor(int fd,
                                            int open_flags) const override;
-  StatusOr<int> CwdFileDescriptor(int open_flags) const override;
-  StatusOr<int> RootFileDescriptor(int open_flags) const override;
+  absl::StatusOr<int> CwdFileDescriptor(int open_flags) const override;
+  absl::StatusOr<int> RootFileDescriptor(int open_flags) const override;
 
   pid_t Pid() const;
   std::string Cwd() const;
   std::string Cmdline() const;
 
  private:
-  StatusOr<int> OpenFileInProc(absl::string_view path,
+  absl::StatusOr<int> OpenFileInProc(absl::string_view path,
                                      int open_flags) const;
   pid_t pid_;
   std::string cwd_;

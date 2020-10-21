@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "pathauditor/util/statusor.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
 
@@ -35,8 +35,8 @@ struct FileEvent {
   std::vector<uint64_t> args;
   std::vector<std::string> path_args;
 
-  StatusOr<uint64_t> Arg(size_t idx) const;
-  StatusOr<std::string> PathArg(size_t idx) const;
+  absl::StatusOr<uint64_t> Arg(size_t idx) const;
+  absl::StatusOr<std::string> PathArg(size_t idx) const;
 };
 
 inline std::ostream& operator<<(std::ostream& os, FileEvent e) {

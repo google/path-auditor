@@ -25,7 +25,7 @@
 #include <iterator>
 #include <vector>
 
-#include "pathauditor/util/statusor.h"
+#include "absl/status/statusor.h"
 #include "pathauditor/file_event.h"
 #include "pathauditor/libc/logging.h"
 #include "pathauditor/pathauditor.h"
@@ -95,7 +95,7 @@ void LibcFileEventIsUserControlled(const FileEvent &file_event,
   }
   sanitizing = true;
 
-  StatusOr<bool> result =
+  absl::StatusOr<bool> result =
       FileEventIsUserControlled(SameProcessInformation(), file_event);
   if (!result.ok()) {
     LogError(result.status());

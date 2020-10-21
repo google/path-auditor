@@ -19,7 +19,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "pathauditor/util/status_matchers.h"
-#include "pathauditor/util/status.h"
+#include "util/task/status.h"
 
 namespace pathauditor {
 namespace {
@@ -43,14 +43,14 @@ TEST(FileEventTest, ArgumentAccess) {
 
 TEST(FileEventTest, EmptyArguments) {
   FileEvent event(SYS_open, {}, {});
-  EXPECT_THAT(event.Arg(0), StatusIs(StatusCode::kOutOfRange));
-  EXPECT_THAT(event.PathArg(0), StatusIs(StatusCode::kOutOfRange));
+  EXPECT_THAT(event.Arg(0), StatusIs(absl::StatusCode::kOutOfRange));
+  EXPECT_THAT(event.PathArg(0), StatusIs(absl::StatusCode::kOutOfRange));
 }
 
 TEST(FileEventTest, NegativeIndex) {
   FileEvent event(SYS_open, {0, 0}, {"/foo", "/bar"});
-  EXPECT_THAT(event.Arg(-1), StatusIs(StatusCode::kOutOfRange));
-  EXPECT_THAT(event.PathArg(-1), StatusIs(StatusCode::kOutOfRange));
+  EXPECT_THAT(event.Arg(-1), StatusIs(absl::StatusCode::kOutOfRange));
+  EXPECT_THAT(event.PathArg(-1), StatusIs(absl::StatusCode::kOutOfRange));
 }
 
 }  // namespace
