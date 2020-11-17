@@ -21,6 +21,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/log_severity.h"
+#include "absl/status/statusor.h"
 #include "absl/types/variant.h"
 #include "pathauditor/util/raw_logging.h"
 #include "pathauditor/util/status.h"
