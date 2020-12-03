@@ -82,6 +82,18 @@ typedef int (*orig_fchmodat_type)(int fd, const char *file, mode_t mode,
 typedef int (*orig_fchownat_type)(int fd, const char *file, uid_t owner,
                                   gid_t group, int flag);
 
+namespace {
+
+std::atomic<bool> mallocInitialized = {false};
+
+__attribute__((constructor))
+void ensureMallocInitialized() {
+  free(malloc(1));
+  mallocInitialized.store(true, std::memory_order_release);
+}
+
+}  // namespace
+
 namespace pathauditor {
 
 // boolean var to avoid sanitizing function calls made while handling another
@@ -116,6 +128,10 @@ int open(const char *file, int oflag, ...) {
     va_start(args, oflag);
     mode = va_arg(args, mode_t);
     va_end(args);
+  }
+
+  if (!mallocInitialized.load(std::memory_order_acquire)) {
+    return syscall(SYS_open, file, oflag, mode);
   }
 
   std::vector<std::string> path_args = {file};
