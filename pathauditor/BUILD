@@ -17,7 +17,6 @@ cc_library(
         "//pathauditor/util:cleanup",
         "//pathauditor/util:path",
         "//pathauditor/util:status_macros",
-        "//third_party/libcap",
         "@com_google_absl//absl/container:fixed_array",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
@@ -44,7 +43,6 @@ cc_library(
     srcs = ["file_event.cc"],
     hdrs = ["file_event.h"],
     deps = [
-        "//pathauditor/util:status_macros",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
     ],
@@ -55,8 +53,8 @@ cc_test(
     srcs = ["file_event_test.cc"],
     deps = [
         ":file_event",
-        "//pathauditor/util:status_macros",
         "//pathauditor/util:status_matchers",
+        "@com_google_absl//absl/status",
         "@com_google_googletest//:gtest_main",
     ],
 )

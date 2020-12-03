@@ -16,82 +16,31 @@ package(default_visibility = ["//pathauditor:__subpackages__"])
 
 licenses(["notice"])  # Apache 2.0
 
-# A custom fork of util/task/status.h. This will become obsolete and will be
-# replaced once Abseil releases absl::Status.
 cc_library(
-    name = "status",
-    srcs = [
-        "canonical_errors.cc",
-        "status.cc",
-    ],
+    name = "status_macros",
     hdrs = [
-        "canonical_errors.h",
-        "status.h",
-        "status_internal.h",
         "status_macros.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//pathauditor/util:status_macros",
         "@com_google_absl//absl/base:core_headers",
-        "@com_google_absl//absl/meta:type_traits",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/status",
     ],
 )
 
-cc_library(
-    name = "statusor",
-    hdrs = ["statusor.h"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":raw_logging",
-        ":status",
-        "@com_google_absl//absl/base",
-        "@com_google_absl//absl/base:core_headers",
-        "@com_google_absl//absl/base:log_severity",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_absl//absl/types:variant",
-    ],
-)
-
-# gMock matchers for pathauditor::Status and pathauditor::StatusOr<T> and a gUnit printer
-# extension for pathauditor::StatusOr<T>.
+# gMock matchers for util::Status and util::StatusOr<T> and a gUnit printer
+# extension for util::StatusOr<T>.
 cc_library(
     name = "status_matchers",
     testonly = 1,
     hdrs = ["status_matchers.h"],
     visibility = ["//visibility:public"],
     deps = [
-        ":status",
-        ":statusor",
+        ":status_macros",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/types:optional",
         "@com_google_googletest//:gtest",
-    ],
-)
-
-# Tests for the Status utility.
-cc_test(
-    name = "status_test",
-    srcs = ["status_test.cc"],
-    deps = [
-        ":status",
-        ":status_matchers",
-        "//pathauditor/util:status_macros",
-        "@com_google_absl//absl/status:statusor",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-# Tests for the StatusOr template class.
-cc_test(
-    name = "statusor_test",
-    srcs = ["statusor_test.cc"],
-    deps = [
-        ":status",
-        ":status_matchers",
-        ":statusor",
-        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -100,10 +49,11 @@ cc_test(
     name = "status_macros_test",
     srcs = ["status_macros_test.cc"],
     deps = [
-        ":status",
+        ":status_macros",
         ":status_matchers",
-        ":statusor",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest_main",
     ],

@@ -19,7 +19,7 @@
 #define PATHAUDITOR_UTIL_STATUS_MACROS_H_
 
 #include "absl/base/optimization.h"
-#include "pathauditor/util/status.h"
+#include "absl/status/status.h"
 
 // Internal helper for concatenating macro values.
 #define PATHAUDITOR_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
@@ -44,6 +44,6 @@
   if (ABSL_PREDICT_FALSE(!statusor.ok())) {                     \
     return statusor.status();                                   \
   }                                                             \
-  lhs = std::move(statusor).ValueOrDie();
+  lhs = std::move(statusor).value();
 
 #endif  // PATHAUDITOR_UTIL_STATUS_MACROS_H_

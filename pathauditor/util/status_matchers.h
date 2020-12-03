@@ -19,9 +19,9 @@
 
 #include "gmock/gmock.h"
 #include "absl/types/optional.h"
-#include "pathauditor/util/status.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "pathauditor/util/status_macros.h"
-#include "pathauditor/util/statusor.h"
 
 #define PATHAUDITOR_PATHAUDITOR_ASSERT_OK_AND_ASSIGN(lhs, rexpr)                        \
   PATHAUDITOR_ASSERT_OK_AND_ASSIGN_IMPL(                                    \
@@ -31,16 +31,16 @@
 #define PATHAUDITOR_ASSERT_OK_AND_ASSIGN_IMPL(statusor, lhs, rexpr) \
   auto statusor = (rexpr);                                          \
   ASSERT_THAT(statusor.status(), pathauditor::IsOk());              \
-  lhs = std::move(statusor).ValueOrDie();
+  lhs = std::move(statusor).value();
 
 namespace pathauditor {
 namespace internal {
 
-// Implements a gMock matcher that checks that an pathauditor::StatusOr<T> has
+// Implements a gMock matcher that checks that an absl::StatusOr<T> has
 // an OK status and that the contained T value matches another matcher.
 template <typename T>
 class IsOkAndHoldsMatcher
-    : public ::testing::MatcherInterface<const StatusOr<T>&> {
+    : public ::testing::MatcherInterface<const absl::StatusOr<T>&> {
  public:
   template <typename MatcherT>
   IsOkAndHoldsMatcher(MatcherT&& value_matcher)
@@ -60,7 +60,7 @@ class IsOkAndHoldsMatcher
 
   // From testing::MatcherInterface.
   bool MatchAndExplain(
-      const StatusOr<T>& status_or,
+      const absl::StatusOr<T>& status_or,
       ::testing::MatchResultListener* listener) const override {
     if (!status_or.ok()) {
       *listener << "which is not OK";
@@ -69,7 +69,7 @@ class IsOkAndHoldsMatcher
 
     ::testing::StringMatchResultListener value_listener;
     bool is_a_match =
-        value_matcher_.MatchAndExplain(status_or.ValueOrDie(), &value_listener);
+        value_matcher_.MatchAndExplain(status_or.value(), &value_listener);
     std::string value_explanation = value_listener.str();
     if (!value_explanation.empty()) {
       *listener << absl::StrCat("which contains a value ", value_explanation);
@@ -89,7 +89,7 @@ class IsOkAndHoldsGenerator {
       : value_matcher_(std::move(value_matcher)) {}
 
   template <typename T>
-  operator ::testing::Matcher<const StatusOr<T>&>() const {
+  operator ::testing::Matcher<const absl::StatusOr<T>&>() const {
     return ::testing::MakeMatcher(new IsOkAndHoldsMatcher<T>(value_matcher_));
   }
 
@@ -129,10 +129,10 @@ class StatusIsMatcher {
     auto status = GetStatus(value);
     if (code_ != status.code()) {
       *listener << "whose error code is generic::"
-                << internal::CodeEnumToString(status.code());
+                << absl::StatusCodeToString(status.code());
       return false;
     }
-    if (message_.has_value() && status.error_message() != message_.value()) {
+    if (message_.has_value() && status.message() != message_.value()) {
       *listener << "whose error message is '" << message_.value() << "'";
       return false;
     }
@@ -141,7 +141,7 @@ class StatusIsMatcher {
 
   void DescribeTo(std::ostream* os) const {
     *os << "has a status code that is generic::"
-        << internal::CodeEnumToString(code_);
+        << absl::StatusCodeToString(code_);
     if (message_.has_value()) {
       *os << ", and has an error message that is '" << message_.value() << "'";
     }
@@ -149,7 +149,7 @@ class StatusIsMatcher {
 
   void DescribeNegationTo(std::ostream* os) const {
     *os << "has a status code that is not generic::"
-        << internal::CodeEnumToString(code_);
+        << absl::StatusCodeToString(code_);
     if (message_.has_value()) {
       *os << ", and has an error message that is not '" << message_.value()
           << "'";

@@ -17,7 +17,6 @@
 
 #include "absl/status/status.h"
 #include "pathauditor/file_event.h"
-#include "util/task/status.h"
 
 namespace pathauditor {
 

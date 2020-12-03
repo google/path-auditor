@@ -16,13 +16,12 @@
 
 #include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
-#include "util/task/canonical_errors.h"
 
 namespace pathauditor {
 
 absl::StatusOr<uint64_t> FileEvent::Arg(size_t idx) const {
   if (idx >= args.size()) {
-    return util::OutOfRangeError(
+    return absl::OutOfRangeError(
         absl::StrCat("Index ", idx, " out of range (size ", args.size(), ")."));
   }
   return args[idx];
@@ -30,7 +29,7 @@ absl::StatusOr<uint64_t> FileEvent::Arg(size_t idx) const {
 
 absl::StatusOr<std::string> FileEvent::PathArg(size_t idx) const {
   if (idx >= path_args.size()) {
-    return util::OutOfRangeError(absl::StrCat(
+    return absl::OutOfRangeError(absl::StrCat(
         "Index ", idx, " out of range (size ", path_args.size(), ")."));
   }
   return path_args[idx];

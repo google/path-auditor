@@ -17,9 +17,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Absl
 http_archive(
     name = "com_google_absl",
-    sha256 = "3c119a995f3bb1e2aa7b3a37efe526172695816d63bb7a001139f25d628b9c6e",  # 2019-07-18
-    strip_prefix = "abseil-cpp-278b26058c036833a4f7f3047d3f4d9296527f87",
-    urls = ["https://github.com/abseil/abseil-cpp/archive/278b26058c036833a4f7f3047d3f4d9296527f87.zip"],
+    sha256 = "306639352ec60dcbfc695405e989e1f63d0e55001582a5185b0a8caf2e8ea9ca",  # 2019-07-18
+    strip_prefix = "abseil-cpp-20200923.2",
+    urls = ["https://github.com/abseil/abseil-cpp/archive/20200923.2.zip"],
 )
 
 # GoogleTest/GoogleMock
@@ -28,15 +28,6 @@ http_archive(
     sha256 = "baed63b97595c32667694de0a434f8f23da59609c4a44f3360ba94b0abd5c583",
     strip_prefix = "googletest-8ffb7e5c88b20a297a2e786c480556467496463b",
     urls = ["https://github.com/google/googletest/archive/8ffb7e5c88b20a297a2e786c480556467496463b.zip"],  # 2019-05-30
-)
-
-# libcap
-http_archive(
-    name = "org_kernel_libcap",
-    build_file = "//pathauditor:bazel/libcap.BUILD",
-    sha256 = "ef83108f77314e50bae926ae473f9b130b15240d17cbae05089e19c36a8676d6",
-    strip_prefix = "libcap-2.13",
-    urls = ["https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.13.tar.gz"],
 )
 
 # gflags

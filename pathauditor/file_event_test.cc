@@ -18,8 +18,8 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/status/status.h"
 #include "pathauditor/util/status_matchers.h"
-#include "util/task/status.h"
 
 namespace pathauditor {
 namespace {

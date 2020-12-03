@@ -110,10 +110,10 @@ void LogInsecureAccess(const FileEvent &event, const char *function_name) {
   syslog(LOG_WARNING, "InsecureAccess: %s", event_info.c_str());
 }
 
-void LogError(const util::Status &status) {
+void LogError(const absl::Status &status) {
   openlog("pathauditor", LOG_PID, 0);
   syslog(LOG_WARNING, "Cannot audit: %s",
-         std::string(status.error_message()).c_str());
+         std::string(status.message()).c_str());
 }
 
 }  // namespace pathauditor

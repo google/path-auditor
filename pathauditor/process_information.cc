@@ -21,7 +21,6 @@
 #include "pathauditor/util/path.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
-#include "util/task/canonical_errors.h"
 #include "pathauditor/util/status_macros.h"
 
 namespace pathauditor {
@@ -31,7 +30,7 @@ namespace {
 absl::StatusOr<int> OpenFile(absl::string_view path, int open_flags) {
   int fd = open(std::string(path).c_str(), open_flags);
   if (fd == -1) {
-    return util::FailedPreconditionError(
+    return absl::FailedPreconditionError(
         absl::StrCat("Could not open \"", path, "\""));
   }
   return fd;
@@ -91,7 +90,7 @@ absl::StatusOr<int> SameProcessInformation::DupDirFileDescriptor(
   // use openat instead of dup so that we control the flags
   int new_fd = openat(fd, ".", open_flags);
   if (new_fd == -1) {
-    return util::FailedPreconditionError("openat on dir fd failed");
+    return absl::FailedPreconditionError("openat on dir fd failed");
   }
   return new_fd;
 }

@@ -39,8 +39,6 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
-#include "util/task/canonical_errors.h"
-#include "util/task/status.h"
 #include "pathauditor/util/status_macros.h"
 
 #ifndef FS_IOC_GETFLAGS
@@ -74,7 +72,7 @@ absl::StatusOr<bool> FdIsImmutable(int fd) {
       // ENOTTY is returned if the filesystem doesn't support this option
       return false;
     }
-    return util::FailedPreconditionError("ioctl(FS_IOC_GETFLATS) failed.");
+    return absl::FailedPreconditionError("ioctl(FS_IOC_GETFLATS) failed.");
   }
   return flags & FS_IMMUTABLE_FL;
 }
@@ -104,7 +102,7 @@ absl::StatusOr<bool> FileIsUserWritable(
   struct stat sb;
   if (fstatat(dir_fd, std::string(file).c_str(), &sb, 0) == -1) {
     if (errno != ENOENT) {
-      return util::FailedPreconditionError(
+      return absl::FailedPreconditionError(
           absl::StrCat("Couldn't fstatat ", file));
     }
     // The file doesn't exist so it's not writable
@@ -143,7 +141,7 @@ absl::StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
   int file_fd = openat(dir_fd, std::string(file).c_str(), O_RDONLY);
   if (file_fd == -1) {
     if (errno != ENOENT) {
-      return util::FailedPreconditionError(
+      return absl::FailedPreconditionError(
           absl::StrCat("Couldn't open file for immutable check ", file));
     }
   } else {
@@ -156,7 +154,7 @@ absl::StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
 
   struct statfs fs_buf;
   if (fstatfs(dir_fd, &fs_buf) == -1) {
-    return util::FailedPreconditionError("fstatfs(dir_fd) failed");
+    return absl::FailedPreconditionError("fstatfs(dir_fd) failed");
   }
 
   // ignore proc and cgroup filesystems
@@ -168,7 +166,7 @@ absl::StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
 
   struct stat sb;
   if (fstat(dir_fd, &sb) == -1) {
-    return util::FailedPreconditionError("fstat(dir_fd) failed");
+    return absl::FailedPreconditionError("fstat(dir_fd) failed");
   }
 
   // non-root owner
@@ -193,7 +191,7 @@ absl::StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
     if (fstatat(dir_fd, std::string(file).c_str(), &next_sb, AT_SYMLINK_NOFOLLOW) ==
         -1) {
       if (errno != ENOENT) {
-        return util::FailedPreconditionError(
+        return absl::FailedPreconditionError(
             absl::StrCat("Couldn't fstatat ", file));
       }
       // The file doesn't exist but it could be created by a user
@@ -250,7 +248,7 @@ absl::StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
     struct stat sb;
     if (fstatat(dir_fd, elem.c_str(), &sb, AT_SYMLINK_NOFOLLOW) == -1) {
       if (errno != ENOENT) {
-        return util::FailedPreconditionError(
+        return absl::FailedPreconditionError(
             absl::StrCat("Could not stat path element ", elem));
       } else {
         return false;
@@ -263,12 +261,12 @@ absl::StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
     if ((sb.st_mode & S_IFMT) == S_IFLNK) {
       struct statfs fs_buf;
       if (fstatfs(dir_fd, &fs_buf) == -1) {
-        return util::FailedPreconditionError("fstatfs(dir_fd) failed");
+        return absl::FailedPreconditionError("fstatfs(dir_fd) failed");
       }
 
       if (fs_buf.f_type == PROC_SUPER_MAGIC) {
         if (fstatat(dir_fd, elem.c_str(), &sb, 0) == -1) {
-          return util::FailedPreconditionError(absl::StrCat(
+          return absl::FailedPreconditionError(absl::StrCat(
               "Could not stat path element without nofollow", elem));
         }
       }
@@ -279,7 +277,7 @@ absl::StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
         // Change into the directory
         int new_fd = openat(dir_fd, elem.c_str(), kDirOpenFlags);
         if (new_fd == -1) {
-          return util::FailedPreconditionError(
+          return absl::FailedPreconditionError(
               absl::StrCat("Couldn't openat next elem ", elem));
         }
         close(dir_fd);
@@ -292,11 +290,11 @@ absl::StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
         ssize_t link_len = readlinkat(dir_fd, elem.c_str(), link_buf.data(),
                                       link_buf.memsize());
         if (link_len == -1) {
-          return util::FailedPreconditionError(
+          return absl::FailedPreconditionError(
               absl::StrCat("Could not read link for path element ", elem));
         }
         if ((size_t)link_len >= link_buf.memsize()) {
-          return util::FailedPreconditionError(
+          return absl::FailedPreconditionError(
               absl::StrCat("Link is larger than PATH_MAX ",
                            std::string(link_buf.data(), link_buf.memsize())));
         }
@@ -317,14 +315,14 @@ absl::StatusOr<bool> PathIsUserControlled(const ProcessInformation &proc_info,
       }
       default:
         if (!path_queue.empty()) {
-          return util::FailedPreconditionError(
+          return absl::FailedPreconditionError(
               "Non-directory in middle of path.");
         }
         return false;
     }
   }
 
-  return util::ResourceExhaustedError(
+  return absl::ResourceExhaustedError(
       absl::StrCat("Ran into max iteration count ", max_iteration_count));
 }
 
@@ -527,7 +525,7 @@ absl::StatusOr<bool> FileEventIsUserControlled(
     }
     default:
       LOG(ERROR) << "Unexpected syscall nr: " << event.syscall_nr;
-      return util::UnimplementedError(
+      return absl::UnimplementedError(
           absl::StrCat("No support for syscall ", event.syscall_nr));
   }
 
