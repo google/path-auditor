@@ -14,13 +14,11 @@
 
 package(default_visibility = ["//pathauditor:__subpackages__"])
 
-licenses(["notice"])  # Apache 2.0
+licenses(["notice"])
 
 cc_library(
     name = "status_macros",
-    hdrs = [
-        "status_macros.h",
-    ],
+    hdrs = ["status_macros.h"],
     visibility = ["//visibility:public"],
     deps = [
         "@com_google_absl//absl/base:core_headers",
@@ -75,9 +73,7 @@ cc_library(
     name = "path",
     srcs = ["path.cc"],
     hdrs = ["path.h"],
-    deps = [
-        "@com_google_absl//absl/strings",
-    ],
+    deps = ["@com_google_absl//absl/strings"],
 )
 
 cc_library(
