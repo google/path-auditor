@@ -37,10 +37,10 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":status_macros",
+        "@com_google_googletest//:gtest",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/types:optional",
-        "@com_google_googletest//:gtest",
     ],
 )
 
@@ -51,11 +51,11 @@ cc_test(
     deps = [
         ":status_macros",
         ":status_matchers",
+        "@com_google_googletest//:gtest_main",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
-        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -77,17 +77,6 @@ cc_library(
     hdrs = ["path.h"],
     deps = [
         "@com_google_absl//absl/strings",
-    ],
-)
-
-cc_library(
-    name = "raw_logging",
-    srcs = ["raw_logging.cc"],
-    hdrs = ["raw_logging.h"],
-    deps = [
-        ":strerror",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/strings:str_format",
     ],
 )
 
