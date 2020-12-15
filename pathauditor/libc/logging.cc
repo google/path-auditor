@@ -67,6 +67,8 @@ static const std::string &GetCmdline() {
   return cmdline;
 }
 
+static int GetUid() { return syscall(SYS_getuid); }
+
 static std::string CurrentStackTrace() {
   void *stack_trace[kMaxStackFrames];
   int frame_cnt = absl::GetStackTrace(stack_trace, kMaxStackFrames, 2);
@@ -102,9 +104,9 @@ void LogInsecureAccess(const FileEvent &event, const char *function_name) {
   std::string args = absl::StrJoin(event.args, ", ");
   std::string path_args = absl::StrJoin(event.path_args, ", ");
   std::string event_info = absl::StrFormat(
-      "function %s, cmdline %s, syscall_nr %d, args %s, path args %s, stack "
-      "trace:\n%s",
-      function_name, GetCmdline(), event.syscall_nr, args, path_args,
+      "function %s, cmdline %s, syscall_nr %d, args %s, path args %s, uid %d, "
+      "stack trace:\n%s",
+      function_name, GetCmdline(), event.syscall_nr, args, path_args, GetUid(),
       CurrentStackTrace());
 
   syslog(LOG_WARNING, "InsecureAccess: %s", event_info.c_str());
