@@ -65,8 +65,8 @@ namespace {
 // fails with an O_PATH file descriptor.
 constexpr int kDirOpenFlags = O_RDONLY;
 
-static int GetUid() {
-  return syscall(SYS_getuid);
+static int GetEuid() {
+  return syscall(SYS_geteuid);
 }
 
 absl::StatusOr<bool> FdIsImmutable(int fd) {
@@ -118,7 +118,7 @@ absl::StatusOr<bool> FileIsUserWritable(
     return false;
   }
   // is not owned by root or the current user
-  if (sb.st_uid != 0 && sb.st_uid != GetUid()) {
+  if (sb.st_uid != 0 && sb.st_uid != GetEuid()) {
     return true;
   }
   // is not owned by the root group and is group writable or is writable by
@@ -174,7 +174,7 @@ absl::StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
   }
 
   // non-root owner or owner != user
-  if (sb.st_uid != 0 && sb.st_uid != GetUid()) {
+  if (sb.st_uid != 0 && sb.st_uid != GetEuid()) {
     return true;
   }
 
@@ -201,7 +201,7 @@ absl::StatusOr<bool> FileIsUserControlled(int dir_fd, absl::string_view file) {
       // The file doesn't exist but it could be created by a user
       return true;
     }
-    if (next_sb.st_uid != 0 && next_sb.st_uid != GetUid()) {
+    if (next_sb.st_uid != 0 && next_sb.st_uid != GetEuid()) {
       return true;
     }
   }
